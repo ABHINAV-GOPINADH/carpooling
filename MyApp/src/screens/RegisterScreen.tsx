@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../src/navigation/AppNavigator";
-import { registerUser } from "../../src/api/api"; // Import API function
+import { registerUser } from "../api/firebaseAuth";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
 

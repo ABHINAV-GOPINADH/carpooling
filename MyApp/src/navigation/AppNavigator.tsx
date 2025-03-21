@@ -13,7 +13,7 @@ export type RootStackParamList = {
   Splash: undefined;
   SignInSignUp: undefined;
   PersonalDetails: undefined;
-  SignUp: undefined;
+  SignUp?: { name?: string; gender?: string } | undefined;
   SignIn: undefined;
   Welcome: undefined;
   Register: undefined;

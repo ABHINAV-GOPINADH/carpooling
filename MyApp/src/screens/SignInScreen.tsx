@@ -2,21 +2,29 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
+import { signInUser } from "../api/firebaseAuth";
 
-type Props = NativeStackScreenProps<RootStackParamList, "SignIn">;
+type Props = NativeStackScreenProps<RootStackParamList, "SignUp">;
 
 export default function SignInScreen({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignIn = () => {
-    if (!email || !password) {
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Please enter both email and password!");
       return;
     }
-    // TODO: Add sign-in logic (API call)
-    Alert.alert("Success", "Signed in successfully!");
-    navigation.navigate("Welcome");
+
+    try {
+      const user = await signInUser(email, password);
+      console.log("User signed in:", user.uid);
+      Alert.alert("Success", "Signed in successfully!");
+      navigation.navigate("Welcome");
+    } catch (error) {
+      console.error("Login Error:", error);
+      Alert.alert("Sign-in Failed", error instanceof Error ? error.message : "An unexpected error occurred.");
+    }
   };
 
   return (
@@ -27,7 +35,7 @@ export default function SignInScreen({ navigation }: Props) {
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+      <TouchableOpacity onPress={() => navigation.navigate("SignUp", { name: "John Doe", gender: "Male" })}>
         <Text style={styles.linkText}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
     </View>
