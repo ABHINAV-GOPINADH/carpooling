@@ -1,0 +1,15 @@
+node_modules/ 
+.env 
+*.log 
+.DS_Store 
+*.iml 
+.idea/ 
+.expo/ 
+.vscode/ 
+dist/ 
+build/ 
+coverage/ 
+android/app/build/ 
+ios/Pods/ 
+*.apk 
+*.ipa
