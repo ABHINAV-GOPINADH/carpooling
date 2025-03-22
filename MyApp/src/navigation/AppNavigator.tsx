@@ -14,6 +14,9 @@ import HomeScreen from "../screens/HomeScreen";
 import PaymentScreen from "../screens/PaymentScreen";
 import PaymentConfirmationScreen from "../screens/PaymentConfirmationScreen";
 import RatingScreen from "../screens/RatingScreen";
+import ProfileSummaryScreen from '../screens/ProfileSummaryScreen';
+import ProfileSettingsScreen from '../screens/ProfileSettingsScreen';
+import ChangeNumberScreen from '../screens/ChangeNumberScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -31,6 +34,9 @@ export type RootStackParamList = {
   Payment: undefined;
   PaymentConfirmation: undefined;
   Rating: undefined;
+  ProfileSummary: undefined;
+  ProfileSettings: undefined;
+  ChangeNumber: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,6 +59,9 @@ export default function AppNavigator() {
         <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PaymentConfirmation" component={PaymentConfirmationScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Rating" component={RatingScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ProfileSummary" component={ProfileSummaryScreen} options={{ title: 'Profile' }}/>
+        <Stack.Screen name="ProfileSettings" component={ProfileSettingsScreen} options={{ title: 'Profile' }}/>
+        <Stack.Screen name="ChangeNumber" component={ChangeNumberScreen} options={{ title: 'Change Number' }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
