@@ -36,12 +36,13 @@ Ensure you have the following installed:
 ## 🚀 Installation Steps
 
 1. **Clone the repository**
+   Create a Folder named Ecoride 
 
 ```bash
 git clone https://github.com/ABHINAV-GOPINADH/carpooling.git
-cd carpooling
+
 git checkout expo
-cd abhinav/MyExpoApp
+
 ```
 
 2. **Install dependencies**
