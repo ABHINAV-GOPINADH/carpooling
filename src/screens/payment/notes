@@ -1,0 +1,281 @@
+ok now help me correctly add the  files into my project.. like these files comes under payment folder // PaymentConfirmationScreen.tsx
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+const PaymentConfirmationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  // Automatically navigate to the Rating screen after a short delay
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.navigate('Rating');
+    }, 2000); // 2 seconds delay
+    return () => clearTimeout(timer);
+  }, [navigation]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.checkmarkContainer}>
+        <Text style={styles.checkmark}>✔</Text>
+      </View>
+      <Text style={styles.message}>Payment done Successfully!</Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  checkmarkContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#28a745',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 30,
+  },
+  message: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
+
+export default PaymentConfirmationScreen;// paymentScreen.tsx
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+
+const PaymentScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const [cashInput, setCashInput] = useState<string>('');
+
+  // Handle number key press
+  const handleKeyPress = (value: string) => {
+    setCashInput((prev) => prev + value);
+  };
+
+  // Handle backspace (delete last digit)
+  const handleBackspace = () => {
+    setCashInput((prev) => prev.slice(0, -1));
+  };
+
+  // Handle clear (reset input)
+  const handleClear = () => {
+    setCashInput('');
+  };
+
+  const handleConfirm = () => {
+    navigation.navigate('PaymentConfirmation');
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Payment</Text>
+      <Text style={styles.fare}>€ 234</Text>
+      <Text style={styles.fareLabel}>Total fare</Text>
+
+      <Text style={styles.inputLabel}>Enter cash</Text>
+      <TextInput
+        style={styles.input}
+        value={cashInput}
+        editable={false} // Input is controlled by keypad
+        placeholder="Enter amount"
+      />
+
+      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
+        <Text style={styles.confirmButtonText}>Confirm</Text>
+      </TouchableOpacity>
+
+      <View style={styles.keypad}>
+        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((key) => (
+          <TouchableOpacity
+            key={key}
+            style={styles.key}
+            onPress={() => handleKeyPress(key)}
+          >
+            <Text style={styles.keyText}>{key}</Text>
+          </TouchableOpacity>
+        ))}
+        {/* Replace PQRS with Backspace */}
+        <TouchableOpacity style={styles.key} onPress={handleBackspace}>
+          <Text style={styles.keyText}>⌫</Text>
+        </TouchableOpacity>
+        {/* Keep 0 in the middle */}
+        <TouchableOpacity style={styles.key} onPress={() => handleKeyPress('0')}>
+          <Text style={styles.keyText}>0</Text>
+        </TouchableOpacity>
+        {/* Replace WXYZ with Clear */}
+        <TouchableOpacity style={styles.key} onPress={handleClear}>
+          <Text style={styles.keyText}>Clear</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 50,
+  },
+  fare: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  fareLabel: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 10,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    fontSize: 18,
+    padding: 10,
+    marginBottom: 20,
+  },
+  confirmButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  keypad: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  key: {
+    width: '30%',
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  keyText: {
+    fontSize: 18,
+  },
+});
+
+export default PaymentScreen;   // RatingScreen.tsx
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
+const RatingScreen: React.FC = () => {
+  const [rating, setRating] = useState<number>(0);
+
+  const handleRating = (value: number) => {
+    setRating(value);
+  };
+
+  const handleSubmit = () => {
+    // Handle rating submission (e.g., send to backend)
+    console.log('Rating submitted:', rating);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>HOW WAS YOUR TRIP?</Text>
+      <Text style={styles.subtitle}>Your feedback will help us improve driving experience better.</Text>
+
+      {/* Star Rating */}
+      <View style={styles.stars}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity key={star} onPress={() => handleRating(star)}>
+            <Text style={styles.star}>{star <= rating ? '★' : '☆'}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Submit Button */}
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>Submit</Text>
+      </TouchableOpacity>
+
+      {/* Not Now Link */}
+      <TouchableOpacity>
+        <Text style={styles.notNow}>Not now</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  stars: {
+    flexDirection: 'row',
+    marginBottom: 30,
+  },
+  star: {
+    fontSize: 30,
+    color: '#FFD700', // Gold for filled stars
+    marginHorizontal: 5,
+  },
+  submitButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  notNow: {
+    fontSize: 16,
+    color: '#666',
+    textDecorationLine: 'underline',
+  },
+});
+
+export default RatingScreen; help me setup the proper routing here.. them 

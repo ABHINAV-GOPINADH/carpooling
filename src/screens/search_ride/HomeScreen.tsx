@@ -1,17 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from '@expo/vector-icons';
 
+// Typing for HomeScreen props
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 export default function HomeScreen({ navigation }: Props) {
+  const [name] = useState("Siffat"); // Static name for now (no Firebase)
+  const nav = useNavigation();
+
   return (
     <View style={styles.container}>
-      {/* App Title */}
-      <Text style={styles.title}>GOOD RAV, Siffat</Text>
+      {/* Header Bar */}
+      <View style={styles.header}>
+        <Text style={styles.greeting}>Hi, {name}</Text>
+        <TouchableOpacity onPress={() => nav.navigate("ProfileSummary" as never)}>
+          <Ionicons name="person-circle-outline" size={40} color="#114B5F" />
+        </TouchableOpacity>
+      </View>
 
-      {/* Banner Image */}
+      {/* Banner */}
       <Image source={require("../../../assets/travel.jpg")} style={styles.banner} />
 
       {/* Buttons */}
@@ -22,7 +33,10 @@ export default function HomeScreen({ navigation }: Props) {
         <Text style={styles.buttonText}>Book a ride</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.secondaryButton}>
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={() => navigation.navigate("PublishRide")}
+      >
         <Text style={styles.secondaryButtonText}>Publish a ride</Text>
       </TouchableOpacity>
     </View>
@@ -32,19 +46,23 @@ export default function HomeScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 20,
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
+  greeting: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#114B5F",
+  },
   banner: {
-    width: 300,
-    height: 150,
+    width: "100%",
+    height: 200,
     resizeMode: "contain",
     marginBottom: 30,
   },
@@ -54,6 +72,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     marginBottom: 10,
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",
@@ -65,6 +84,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 8,
+    alignItems: "center",
   },
   secondaryButtonText: {
     color: "#333",

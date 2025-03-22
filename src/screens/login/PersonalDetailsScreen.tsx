@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { 
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert 
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
@@ -12,6 +14,24 @@ export default function PersonalDetailsScreen({ navigation }: Props) {
 
   console.log("Current Name:", name);
   console.log("Current Gender:", gender);
+
+  const handleNext = () => {
+    if (name.trim() === "") {
+      Alert.alert("Validation Error", "🚨 Please enter your full name.");
+      return;
+    }
+    if (gender === "") {
+      Alert.alert("Validation Error", "🚨 Please select your gender.");
+      return;
+    }
+
+    console.log("Navigating to SignUp Screen with:", { name, gender });
+
+    // Ensure state is updated before navigating
+    setTimeout(() => {
+      navigation.navigate("SignUp", { name, gender });
+    }, 100);
+  };
 
   return (
     <View style={styles.container}>
@@ -29,7 +49,10 @@ export default function PersonalDetailsScreen({ navigation }: Props) {
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={gender}
-          onValueChange={(itemValue) => setGender(itemValue)}
+          onValueChange={(itemValue) => {
+            console.log("Gender Selected:", itemValue);
+            setGender(itemValue);
+          }}
           style={styles.picker}
         >
           <Picker.Item label="Select Gender" value="" />
@@ -40,13 +63,7 @@ export default function PersonalDetailsScreen({ navigation }: Props) {
       </View>
 
       {/* Save & Next Button */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          console.log("Navigating to SignUp Screen");
-          navigation.navigate("SignUp");
-        }}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleNext}>
         <Text style={styles.buttonText}>Save & Next</Text>
       </TouchableOpacity>
     </View>

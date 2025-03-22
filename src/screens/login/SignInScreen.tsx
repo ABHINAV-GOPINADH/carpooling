@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
+import { signInUser } from "../../api/firebaseAuth";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignIn">;
 
@@ -9,21 +10,54 @@ export default function SignInScreen({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignIn = () => {
-    if (!email || !password) {
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Please enter both email and password!");
       return;
     }
-    // TODO: Add sign-in logic (API call)
-    Alert.alert("Success", "Signed in successfully!");
-    navigation.navigate("Welcome");
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      return;
+    }
+  
+    try {
+      const response = await signInUser(email, password);
+  
+      if (!response.success) {
+        Alert.alert("Sign-in Failed", response.error || "Unknown error occurred.");
+        return;
+      }
+  
+      // ✅ TypeScript is now sure response.user exists
+      console.log("User signed in:", response.user.uid);
+      Alert.alert("Success", "Signed in successfully!");
+      navigation.navigate("Welcome");
+    } catch (error) {
+      console.error("Login Error:", error);
+      Alert.alert("Sign-in Failed", error instanceof Error ? error.message : "An unexpected error occurred.");
+    }
   };
-
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back!</Text>
-      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
