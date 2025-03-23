@@ -56,9 +56,10 @@ const styles = StyleSheet.create({
   label: { fontSize: 18, marginBottom: 10 },
   datePicker: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#cccc",
     padding: 10,
     borderRadius: 5,
+
     marginBottom: 20,
   },
   dateText: { fontSize: 16 },
@@ -70,3 +71,5 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
 });
+
+

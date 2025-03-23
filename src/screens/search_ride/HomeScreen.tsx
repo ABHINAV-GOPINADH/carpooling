@@ -1,3 +1,4 @@
+// HomeScreen.tsx
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -5,11 +6,11 @@ import { RootStackParamList } from "../../navigation/AppNavigator";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 
-// Typing for HomeScreen props
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 export default function HomeScreen({ navigation }: Props) {
-  const [name] = useState("Siffat"); // Static name for now (no Firebase)
+  // Use static data instead of Firebase
+  const [name] = useState("Siffat");
   const nav = useNavigation();
 
   return (
@@ -35,9 +36,17 @@ export default function HomeScreen({ navigation }: Props) {
 
       <TouchableOpacity
         style={styles.secondaryButton}
-        onPress={() => navigation.navigate("PublishRide")}
+        onPress={() => navigation.navigate("PublishRideVehicle")}
       >
         <Text style={styles.secondaryButtonText}>Publish a ride</Text>
+      </TouchableOpacity>
+
+      {/* Styled "View Ride Requests" Button */}
+      <TouchableOpacity
+        style={styles.viewRequestsButton}
+        onPress={() => navigation.navigate("RideRequests")}
+      >
+        <Text style={styles.viewRequestsButtonText}>View Ride Requests</Text>
       </TouchableOpacity>
     </View>
   );
@@ -85,10 +94,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     alignItems: "center",
+    marginBottom: 10,
   },
   secondaryButtonText: {
     color: "#333",
     fontSize: 16,
     fontWeight: "bold",
   },
+  // New styles for "View Ride Requests" button
+  viewRequestsButton: {
+    backgroundColor: "#114B5F",
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  viewRequestsButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
+
+

@@ -1,9 +1,16 @@
 // RatingScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/AppNavigator'; // adjust the path as needed
+
+// Define the navigation type for this screen
+type RatingScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Rating'>;
 
 const RatingScreen: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
+  const navigation = useNavigation<RatingScreenNavigationProp>();
 
   const handleRating = (value: number) => {
     setRating(value);
@@ -12,12 +19,15 @@ const RatingScreen: React.FC = () => {
   const handleSubmit = () => {
     // Handle rating submission (e.g., send to backend)
     console.log('Rating submitted:', rating);
+    navigation.navigate('Home');
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>HOW WAS YOUR TRIP?</Text>
-      <Text style={styles.subtitle}>Your feedback will help us improve driving experience better.</Text>
+      <Text style={styles.subtitle}>
+        Your feedback will help us improve driving experience better.
+      </Text>
 
       {/* Star Rating */}
       <View style={styles.stars}>
@@ -34,7 +44,7 @@ const RatingScreen: React.FC = () => {
       </TouchableOpacity>
 
       {/* Not Now Link */}
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <Text style={styles.notNow}>Not now</Text>
       </TouchableOpacity>
     </View>

@@ -31,7 +31,11 @@ const dummyRides = [
 
 export default function AvailableRidesScreen({ navigation }: Props) {
   const renderItem = ({ item }: { item: typeof dummyRides[0] }) => (
-    <View style={styles.card}>
+    // Wrap the entire card in a TouchableOpacity so the whole card is clickable
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate("RideDetail", { ride: item })}
+    >
       <View style={styles.cardHeader}>
         <Image
           source={{ uri: "https://via.placeholder.com/50" }}
@@ -43,16 +47,29 @@ export default function AvailableRidesScreen({ navigation }: Props) {
         </View>
       </View>
       <Text>{item.time}</Text>
-      <Text>{item.location} ➡ {item.destination}</Text>
+      <Text>
+        {item.location} ➡ {item.destination}
+      </Text>
       <Text>Vehicle: {item.vehicle}</Text>
       <Text>Total seats: 2 | Per seat: {item.price}</Text>
+      {/* Optional: If you still want a separate "Request" button,
+          you can either remove this or handle it differently */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("RequestSent")}
       >
         <Text style={styles.buttonText}>Request</Text>
       </TouchableOpacity>
-    </View>
+      <TouchableOpacity
+      style={{ padding: 15, backgroundColor: "#ddd", marginTop: 20 }}
+      onPress={() => navigation.navigate("RideStatus", { requestStatus: "Accepted" })}
+    >
+      <Text>Test Ride Status as Accepted</Text>
+    </TouchableOpacity>
+
+
+    </TouchableOpacity>
+    
   );
 
   return (
