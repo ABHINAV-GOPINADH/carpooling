@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../navigation/AppNavigator";
+import { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "RideDetail">;
 
@@ -21,12 +21,12 @@ export default function RideDetailScreen({ route }: Props) {
           <Text style={styles.rating}>⭐ {ride.rating}</Text>
         </View>
       </View>
+      <Text style={styles.info}>Date: {ride.date}</Text>
       <Text style={styles.info}>Time: {ride.time}</Text>
       <Text style={styles.info}>From: {ride.location}</Text>
       <Text style={styles.info}>To: {ride.destination}</Text>
       <Text style={styles.info}>Vehicle: {ride.vehicle}</Text>
       <Text style={styles.info}>Price per seat: {ride.price}</Text>
-      {/* Add any additional details or actions as needed */}
     </View>
   );
 }

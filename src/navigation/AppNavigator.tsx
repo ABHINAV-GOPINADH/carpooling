@@ -9,14 +9,14 @@ import SignInScreen from "../screens/login/SignInScreen";
 import WelcomeScreen from "../screens/login/WelcomeScreen";
 import RegisterScreen from "../screens/login/RegisterScreen";
 import LoginScreen from "../screens/login/LoginScreen";
-import HomeScreen from "../screens/search_ride/HomeScreen";
-import SelectLocationScreen from "../screens/search_ride/BookRide/SelectLocationScreen";
-import SelectStationScreen from "../screens/search_ride/BookRide/SelectStationScreen";
-import RideRequestSentScreen from "../screens/search_ride/BookRide/RideRequestSentScreen";
-import AvailableRidesScreen from "../screens/search_ride/BookRide/AvailableRidesScreen";
-import WaitingScreen from "../screens/search_ride/BookRide/WaitingScreen";
-import SelectDateScreen from "../screens/search_ride/BookRide/SelectDateScreen";
-import SelectSeatsScreen from "../screens/search_ride/BookRide/SelectSeatsScreen";
+import HomeScreen from "../screens/HomeScreen";
+import SelectLocationScreen from "../screens/BookRide/SelectLocationScreen";
+import SelectStationScreen from "../screens/BookRide/SelectStationScreen";
+import RideRequestSentScreen from "../screens/BookRide/RideRequestSentScreen";
+import AvailableRidesScreen from "../screens/BookRide/AvailableRidesScreen";
+import WaitingScreen from "../screens/BookRide/WaitingScreen";
+import SelectDateScreen from "../screens/BookRide/SelectDateScreen";
+import SelectSeatsScreen from "../screens/BookRide/SelectSeatsScreen";
 import ProfileSettingsScreen from "../screens/profile/ProfileSettingsScreen";
 import ProfileSummaryScreen from "../screens/profile/ProfileSummaryScreen";
 import ChangeNumberScreen from "../screens/profile/ChangeNumberScreen";
@@ -31,10 +31,12 @@ import PublishRideSummaryScreen from "../screens/publish_ride/PublishRideSummary
 import PaymentScreen from "../screens/payment/PaymentScreen";
 import PaymentConfirmationScreen from "../screens/payment/PaymentConfirmationScreen";
 import RatingScreen from "../screens/payment/RatingScreen";
-import RideDetailScreen from "../screens/search_ride/BookRide/RideDetailScreen";
-import RideStatusScreen from "../screens/search_ride/BookRide/RideStatusScreen";
-import RideRequestsScreen from "../screens/publish_ride/RideRequestsScreen";
+import RideDetailScreen from "../screens/BookRide/RideDetailScreen";
+import RideStatusScreen from "../screens/BookRide/RideStatusScreen";
+import RideRequestsScreen from "../screens/Ride_Request/RideRequestsScreen";
 // import OtpVerificationScreen from "../screens/profile/OtpVerificationScreen";
+import { Ride } from '../api/rideService'; 
+
 
 
 export type RootStackParamList = {
@@ -50,11 +52,11 @@ export type RootStackParamList = {
   Home: undefined;
   // Book Ride Flow
   SelectLocation: undefined;
-  SelectStation: undefined;
-  SelectDate: undefined;
-  SelectSeats: undefined;
-  AvailableRides: undefined;
-  Waiting: undefined;
+  SelectStation: { currentLocation: string };
+  SelectDate: { currentLocation: string; destinationStation: string };
+  SelectSeats: { currentLocation: string; destinationStation: string; selectedDate: string };
+  AvailableRides: { availableRides: Ride[] };
+  Waiting: { currentLocation: string; destinationStation: string; selectedDate: string; numberOfSeats: number };
   RequestSent: undefined;
   PublishRide: undefined;
   // Profile Flow
@@ -64,36 +66,28 @@ export type RootStackParamList = {
   OtpVerification: { phoneNumber: string };
   // Publish a Ride Flow
   PublishRideVehicle: undefined;
-  PublishRideLocation: undefined;
-  PublishRideStops: undefined;
-  PublishRidePrices: undefined;
-  PublishRideDateTime: undefined;
-  PublishRideSeats: undefined;
-  PublishRideSummary: undefined;
+  PublishRideLocation: { vehicle: string; plateNumber: string }; // <-- Added correct types here
+  PublishRideStops: {vehicle:string; plateNumber:string;pickup:string;destination:string};
+  PublishRidePrices: { vehicle:string; plateNumber:string;pickup:string;destination:string;stops:string[]};
+  PublishRideDateTime: { vehicle:string; plateNumber:string;pickup:string;destination:string;stops:string[],pricePerSeat:string};
+  PublishRideSeats: { vehicle: string; plateNumber: string; pickup: string; destination: string; stops: string[]; pricePerSeat: string; date: Date; time: Date};
+  PublishRideSummary: { vehicle: string; plateNumber: string; pickup: string; destination: string; stops: string[]; pricePerSeat: string; date: Date; time: Date;seats: number};
 
   // Payment Flow
-  Payment: undefined;
+  
+  Payment: { requestId: string };
+
   PaymentConfirmation: undefined;
   Rating: undefined;
 
   // Ride Details Screen (if needed)
-  RideDetail: { 
-    ride: {
-      id: string;
-      name: string;
-      rating: string;
-      time: string;
-      location: string;
-      destination: string;
-      vehicle: string;
-      price: string;
-    }
-  };
+  RideDetail: { ride: Ride }; 
 
   // New Screens for Request Management
   RideRequests: undefined; // For the publisher viewing incoming requests
-  RideStatus: { requestStatus: string }; // For the customer to view request status
+  RideStatus: { requestId: string }; // For the customer to view request status
 };
+
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

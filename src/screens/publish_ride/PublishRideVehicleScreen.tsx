@@ -11,12 +11,16 @@ export default function PublishRideVehicleScreen({ navigation }: Props) {
   const [plateNumber, setPlateNumber] = useState("");
 
   const handleNext = () => {
-    // Validate fields if needed
     if (!vehicle || !plateNumber) {
       alert("Please enter vehicle and plate number.");
       return;
     }
-    navigation.navigate("PublishRideLocation");
+
+    // Pass data to the next screen
+    navigation.navigate("PublishRideLocation", {
+      vehicle,
+      plateNumber,
+    });
   };
 
   return (
@@ -45,10 +49,17 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
   input: {
-    borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 5, marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   button: {
-    backgroundColor: "#28a745", padding: 15, borderRadius: 5, alignItems: "center",
+    backgroundColor: "#28a745",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
   },
   buttonText: { color: "#fff", fontWeight: "bold" },
 });

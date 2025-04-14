@@ -1,26 +1,26 @@
-// screens/BookRide/SelectStationScreen.tsx
+// screens/BookRide/SelectLocationScreen.tsx
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../navigation/AppNavigator";
+import { RootStackParamList } from "../../navigation/AppNavigator";
 
-type Props = NativeStackScreenProps<RootStackParamList, "SelectStation">;
+type Props = NativeStackScreenProps<RootStackParamList, "SelectLocation">;
 
-export default function SelectStationScreen({ navigation }: Props) {
-  const [station, setStation] = useState("");
+export default function SelectLocationScreen({ navigation }: Props) {
+  const [location, setLocation] = useState("");
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Where are you heading?</Text>
+      <Text style={styles.label}>Where are you now?</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your destination station"
-        value={station}
-        onChangeText={setStation}
+        placeholder="Enter your location"
+        value={location}
+        onChangeText={setLocation}
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("SelectDate")}
+        onPress={() => navigation.navigate("SelectStation", { currentLocation: location })}
       >
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>

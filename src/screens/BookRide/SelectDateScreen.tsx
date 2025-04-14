@@ -1,23 +1,34 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../navigation/AppNavigator";
+import { RootStackParamList } from "../../navigation/AppNavigator";
 import { DatePickerModal } from "react-native-paper-dates";
 import { Button } from "react-native-paper";
+import { useRoute } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SelectDate">;
 
 export default function SelectDateScreen({ navigation }: Props) {
   const [date, setDate] = useState<Date | undefined>();
   const [show, setShow] = useState(false);
+  const { currentLocation, destinationStation } = useRoute<Props["route"]>().params;
 
   const onDismiss = () => setShow(false);
 
-  const onConfirm = ({ date }: { date: Date | undefined }) => {
-    setDate(date);
+  const onConfirm = ({ date: selectedDate }: { date: Date | undefined }) => {
+    setDate(selectedDate);
     setShow(false);
   };
-  
+
+  const handleNext = () => {
+    if (date) {
+      navigation.navigate("SelectSeats", {
+        currentLocation: currentLocation,
+        destinationStation: destinationStation,
+        selectedDate: date.toISOString(), // Pass date as ISO string
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -31,18 +42,17 @@ export default function SelectDateScreen({ navigation }: Props) {
 
       {/* Date Picker Modal */}
       <DatePickerModal
-            locale="en"
-            mode="single"
-            visible={show}
-            onDismiss={onDismiss}
-            date={date}
-            onConfirm={onConfirm}
-            />
-
+        locale="en"
+        mode="single"
+        visible={show}
+        onDismiss={onDismiss}
+        date={date}
+        onConfirm={onConfirm}
+      />
 
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("SelectSeats")}
+        style={[styles.button, !date && styles.disabledButton]}
+        onPress={handleNext}
         disabled={!date} // Disable next button until a date is selected
       >
         <Text style={styles.buttonText}>Next</Text>
@@ -59,7 +69,6 @@ const styles = StyleSheet.create({
     borderColor: "#cccc",
     padding: 10,
     borderRadius: 5,
-
     marginBottom: 20,
   },
   dateText: { fontSize: 16 },
@@ -69,7 +78,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     opacity: 1,
   },
+  disabledButton: {
+    opacity: 0.5,
+  },
   buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
 });
-
-

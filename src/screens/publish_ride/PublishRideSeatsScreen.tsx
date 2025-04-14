@@ -6,11 +6,22 @@ import { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PublishRideSeats">;
 
-export default function PublishRideSeatsScreen({ navigation }: Props) {
+export default function PublishRideSeatsScreen({ navigation, route }: Props) {
   const [seats, setSeats] = useState(1);
+  const { vehicle, plateNumber, pickup, destination, stops, pricePerSeat, date, time } = route.params;
 
   const handleNext = () => {
-    navigation.navigate("PublishRideSummary");
+    navigation.navigate("PublishRideSummary", {
+      vehicle,
+      plateNumber,
+      pickup,
+      destination,
+      stops,
+      pricePerSeat,
+      date,
+      time,
+      seats,
+    });
   };
 
   return (

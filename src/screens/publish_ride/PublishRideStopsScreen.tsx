@@ -1,4 +1,3 @@
-// src/screens/publish_ride/PublishRideStopsScreen.tsx
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -6,19 +5,27 @@ import { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PublishRideStops">;
 
-export default function PublishRideStopsScreen({ navigation }: Props) {
+export default function PublishRideStopsScreen({ navigation, route }: Props) {
+  const { vehicle, plateNumber, pickup, destination } = route.params;
+
   const [stops, setStops] = useState<string[]>([]);
   const [newStop, setNewStop] = useState("");
 
   const addStop = () => {
     if (newStop.trim()) {
-      setStops([...stops, newStop]);
+      setStops([...stops, newStop.trim()]);
       setNewStop("");
     }
   };
 
   const handleNext = () => {
-    navigation.navigate("PublishRidePrices");
+    navigation.navigate("PublishRidePrices", {
+      vehicle,
+      plateNumber,
+      pickup,
+      destination,
+      stops,
+    });
   };
 
   return (
@@ -35,9 +42,7 @@ export default function PublishRideStopsScreen({ navigation }: Props) {
       </TouchableOpacity>
 
       {stops.map((stop, index) => (
-        <Text key={index} style={styles.stopItem}>
-          {stop}
-        </Text>
+        <Text key={index} style={styles.stopItem}>{stop}</Text>
       ))}
 
       <TouchableOpacity style={styles.button} onPress={handleNext}>

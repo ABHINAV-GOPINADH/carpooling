@@ -1,56 +1,64 @@
-// HomeScreen.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../navigation/AppNavigator";
+import { RootStackParamList } from "../navigation/AppNavigator";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
+type UserData = {
+  name: string;
+  email: string;
+  uid: string;
+  gender: string;
+};
+
 export default function HomeScreen({ navigation }: Props) {
-  // Use static data instead of Firebase
-  const [name] = useState("Siffat");
+  const [user, setUser] = useState<UserData | null>(null);
   const nav = useNavigation();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userJson = await AsyncStorage.getItem("user");
+      if (userJson) {
+        setUser(JSON.parse(userJson));
+      }
+    };
+    fetchUser();
+  }, []);
 
   return (
     <View style={styles.container}>
       {/* Header Bar */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hi, {name}</Text>
+        <Text style={styles.greeting}>Hi, {user?.name || "User"}</Text>
         <TouchableOpacity onPress={() => nav.navigate("ProfileSummary" as never)}>
           <Ionicons name="person-circle-outline" size={40} color="#114B5F" />
         </TouchableOpacity>
       </View>
 
       {/* Banner */}
-      <Image source={require("../../../assets/travel.jpg")} style={styles.banner} />
+      <Image source={require("../../assets/travel.jpg")} style={styles.banner} />
 
       {/* Buttons */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("SelectLocation")}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("SelectLocation")}>
         <Text style={styles.buttonText}>Book a ride</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.secondaryButton}
-        onPress={() => navigation.navigate("PublishRideVehicle")}
-      >
+      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate("PublishRideVehicle")}>
         <Text style={styles.secondaryButtonText}>Publish a ride</Text>
       </TouchableOpacity>
 
-      {/* Styled "View Ride Requests" Button */}
-      <TouchableOpacity
-        style={styles.viewRequestsButton}
-        onPress={() => navigation.navigate("RideRequests")}
-      >
+      <TouchableOpacity style={styles.viewRequestsButton} onPress={() => navigation.navigate("RideRequests")}>
         <Text style={styles.viewRequestsButtonText}>View Ride Requests</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

@@ -2,12 +2,23 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../navigation/AppNavigator";
+import { RootStackParamList } from "../../navigation/AppNavigator";
+import { useRoute } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SelectSeats">;
 
 export default function SelectSeatsScreen({ navigation }: Props) {
   const [seats, setSeats] = useState(1);
+  const { currentLocation, destinationStation, selectedDate } = useRoute<Props["route"]>().params;
+
+  const handleNext = () => {
+    navigation.navigate("Waiting", {
+      currentLocation: currentLocation,
+      destinationStation: destinationStation,
+      selectedDate: selectedDate,
+      numberOfSeats: seats,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -25,7 +36,7 @@ export default function SelectSeatsScreen({ navigation }: Props) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Waiting")}
+        onPress={handleNext}
       >
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>

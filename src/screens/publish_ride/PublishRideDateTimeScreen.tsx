@@ -7,14 +7,23 @@ import { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PublishRideDateTime">;
 
-export default function PublishRideDateTimeScreen({ navigation }: Props) {
+export default function PublishRideDateTimeScreen({ navigation,route }: Props) {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
+  const { vehicle, plateNumber, pickup, destination,stops,pricePerSeat } = route.params;
   const handleNext = () => {
-    navigation.navigate("PublishRideSeats");
+    navigation.navigate("PublishRideSeats",{
+      vehicle,
+      plateNumber,
+      pickup,
+      destination,
+      stops,
+      pricePerSeat,
+      date,
+      time,
+    });
   };
 
   return (
