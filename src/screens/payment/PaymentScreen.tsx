@@ -1,70 +1,128 @@
-// paymentScreen.tsx
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 
-const PaymentScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [cashInput, setCashInput] = useState<string>('');
+const PaymentScreen = ({ route, navigation }: any) => {
+  const { requestId } = route.params;
 
-  // Handle number key press
-  const handleKeyPress = (value: string) => {
-    setCashInput((prev) => prev + value);
-  };
+  const [loading, setLoading] = useState(true);
+  const [pricePerSeat, setPricePerSeat] = useState<number>(0);
+  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'UPI' | 'Card'>(
+    'Cash'
+  );
 
-  // Handle backspace (delete last digit)
-  const handleBackspace = () => {
-    setCashInput((prev) => prev.slice(0, -1));
-  };
+  useEffect(() => {
+    const fetchPaymentDetails = async () => {
+      try {
+        const requestRef = doc(db, 'rideRequests', requestId);
+        const requestSnap = await getDoc(requestRef);
+        if (!requestSnap.exists()) throw new Error('Request not found');
 
-  // Handle clear (reset input)
-  const handleClear = () => {
-    setCashInput('');
-  };
+        const requestData = requestSnap.data();
+        const rideId = requestData.rideId;
+
+        const rideRef = doc(db, 'rides', rideId);
+        const rideSnap = await getDoc(rideRef);
+        if (!rideSnap.exists()) throw new Error('Ride not found');
+
+        const rideData = rideSnap.data();
+        setPricePerSeat(parseFloat(rideData.pricePerSeat));
+      } catch (err) {
+        console.error('Error:', err);
+        Alert.alert('Error', 'Could not load payment details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPaymentDetails();
+  }, [requestId]);
+
+  const platformFee = 10;
+  const tax = pricePerSeat * 0.05;
+  const totalAmount = pricePerSeat + platformFee + tax;
 
   const handleConfirm = () => {
-    navigation.navigate('PaymentConfirmation');
+    Alert.alert('Payment Successful', `Paid via ${paymentMethod}`, [
+      {
+        text: 'OK',
+        onPress: () =>
+          navigation.navigate('PaymentConfirmation', {
+            amount: totalAmount.toFixed(2),
+            method: paymentMethod,
+          }),
+      },
+    ]);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text style={{ textAlign: 'center', marginTop: 10 }}>
+          Loading payment summary...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Payment</Text>
-      <Text style={styles.fare}>€ 234</Text>
-      <Text style={styles.fareLabel}>Total fare</Text>
+      <Text style={styles.title}>Payment Summary</Text>
 
-      <Text style={styles.inputLabel}>Enter cash</Text>
-      <TextInput
-        style={styles.input}
-        value={cashInput}
-        editable={false} // Input is controlled by keypad
-        placeholder="Enter amount"
-      />
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Text style={styles.label}>Base Fare</Text>
+          <Text style={styles.value}>€{pricePerSeat.toFixed(2)}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Platform Fee</Text>
+          <Text style={styles.value}>€{platformFee.toFixed(2)}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Tax (5%)</Text>
+          <Text style={styles.value}>€{tax.toFixed(2)}</Text>
+        </View>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalValue}>€{totalAmount.toFixed(2)}</Text>
+        </View>
+      </View>
 
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-        <Text style={styles.confirmButtonText}>Confirm</Text>
-      </TouchableOpacity>
-
-      <View style={styles.keypad}>
-        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((key) => (
+      <Text style={styles.paymentLabel}>Choose Payment Method</Text>
+      <View style={styles.methodContainer}>
+        {['Cash', 'UPI', 'Card'].map((method) => (
           <TouchableOpacity
-            key={key}
-            style={styles.key}
-            onPress={() => handleKeyPress(key)}
+            key={method}
+            style={[
+              styles.methodButton,
+              paymentMethod === method && styles.methodButtonActive,
+            ]}
+            onPress={() => setPaymentMethod(method as any)}
           >
-            <Text style={styles.keyText}>{key}</Text>
+            <Text
+              style={[
+                styles.methodText,
+                paymentMethod === method && styles.methodTextActive,
+              ]}
+            >
+              {method}
+            </Text>
           </TouchableOpacity>
         ))}
-        {/* Replace PQRS with Backspace */}
-        <TouchableOpacity style={styles.key} onPress={handleBackspace}>
-          <Text style={styles.keyText}>⌫</Text>
-        </TouchableOpacity>
-        {/* Keep 0 in the middle */}
-        <TouchableOpacity style={styles.key} onPress={() => handleKeyPress('0')}>
-          <Text style={styles.keyText}>0</Text>
-        </TouchableOpacity>
-        {/* Replace WXYZ with Clear */}
-        <TouchableOpacity style={styles.key} onPress={handleClear}>
-          <Text style={styles.keyText}>Clear</Text>
-        </TouchableOpacity>
       </View>
+
+      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
+        <Text style={styles.confirmText}>Confirm & Pay</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -72,67 +130,89 @@ const PaymentScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 24,
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 50,
-  },
-  fare: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  fareLabel: {
-    fontSize: 16,
-    color: '#666',
     textAlign: 'center',
     marginBottom: 20,
   },
-  inputLabel: {
+  card: {
+    backgroundColor: '#f3f3f3',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    marginTop: 10,
+  },
+  label: {
     fontSize: 16,
-    color: '#666',
+    color: '#444',
+  },
+  value: {
+    fontSize: 16,
+    color: '#444',
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  totalValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  paymentLabel: {
+    fontSize: 16,
+    fontWeight: '600',
     marginBottom: 10,
   },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    fontSize: 18,
-    padding: 10,
-    marginBottom: 20,
+  methodContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+  },
+  methodButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  methodButtonActive: {
+    backgroundColor: '#28a745',
+    borderColor: '#28a745',
+  },
+  methodText: {
+    fontSize: 16,
+    color: '#444',
+  },
+  methodTextActive: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   confirmButton: {
     backgroundColor: '#28a745',
-    padding: 15,
+    paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
   },
-  confirmButtonText: {
+  confirmText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  keypad: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  key: {
-    width: '30%',
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  keyText: {
-    fontSize: 18,
   },
 });
 

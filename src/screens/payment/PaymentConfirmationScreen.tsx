@@ -1,13 +1,13 @@
-// PaymentConfirmationScreen.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const PaymentConfirmationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  // Automatically navigate to the Rating screen after a short delay
+const PaymentConfirmationScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
+  const { amount, method } = route.params;
+
   React.useEffect(() => {
     const timer = setTimeout(() => {
       navigation.navigate('Rating');
-    }, 2000); // 2 seconds delay
+    }, 2000);
     return () => clearTimeout(timer);
   }, [navigation]);
 
@@ -16,7 +16,9 @@ const PaymentConfirmationScreen: React.FC<{ navigation: any }> = ({ navigation }
       <View style={styles.checkmarkContainer}>
         <Text style={styles.checkmark}>✔</Text>
       </View>
-      <Text style={styles.message}>Payment done Successfully!</Text>
+      <Text style={styles.message}>Payment Successful!</Text>
+      <Text style={styles.details}>Amount Paid: € {amount}</Text>
+      <Text style={styles.details}>Method: {method}</Text>
     </View>
   );
 };
@@ -29,9 +31,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   checkmarkContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: '#28a745',
     justifyContent: 'center',
     alignItems: 'center',
@@ -39,13 +41,19 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 36,
   },
   message: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  details: {
+    fontSize: 16,
+    marginTop: 10,
+    color: '#444',
+  },
 });
 
 export default PaymentConfirmationScreen;
+ 
