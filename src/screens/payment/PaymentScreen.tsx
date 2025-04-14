@@ -57,7 +57,7 @@ const PaymentScreen = ({ route, navigation }: any) => {
         onPress: () =>
           navigation.navigate('PaymentConfirmation', {
             amount: totalAmount.toFixed(2),
-            method: paymentMethod,
+            method: paymentMethod,requestId
           }),
       },
     ]);

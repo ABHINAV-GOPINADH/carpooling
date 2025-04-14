@@ -11,6 +11,7 @@ import {
   runTransaction,
   DocumentData,
   where,
+  getDoc,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -70,15 +71,28 @@ export const publishRide = async (
   }
 };
 
-export const fetchAvailableRides = async ():
-  Promise<{ success: boolean; data?: Ride[]; error?: string }> => {
+export const fetchAvailableRides = async (): Promise<{ success: boolean; data?: Ride[]; error?: string }> => {
   try {
     const ridesCollection = collection(db, "rides");
     const snapshot = await getDocs(ridesCollection);
     const allRides: Ride[] = [];
 
-    snapshot.forEach((docSnap: DocumentData) => {
+    for (const docSnap of snapshot.docs) {
       const data = docSnap.data();
+      const driverId = data.driverId || "";
+
+      // Fetch driver's rating from 'users' collection
+      let driverRating = "N/A";
+      try {
+        const userDoc = await getDoc(doc(db, "users", driverId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          driverRating = userData.rating?.toFixed(1) || "N/A";
+        }
+      } catch (err) {
+        console.warn(`Error fetching driver info for ${driverId}`, err);
+      }
+
       allRides.push({
         id: docSnap.id,
         vehicle: data.vehicle || "",
@@ -90,21 +104,22 @@ export const fetchAvailableRides = async ():
         date: data.date || "",
         time: data.time || "",
         seatsAvailable: data.seatsAvailable || 0,
-        driverId: data.driverId || "",
+        driverId,
         driverName: data.driverName || "",
         createdAt: data.createdAt || null,
         name: data.driverName || "",
-        rating: "4.5",
+        rating: driverRating,
         location: data.pickup || "",
         price: `€${data.pricePerSeat || 0}`,
       });
-    });
+    }
 
     return { success: true, data: allRides };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
 };
+
 
 export type RideRequest = {
   id: string;

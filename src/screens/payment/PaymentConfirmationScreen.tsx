@@ -1,15 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const PaymentConfirmationScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
-  const { amount, method } = route.params;
+  const { amount, method, requestId } = route.params;
+  const [driverId, setDriverId] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.navigate('Rating');
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  useEffect(() => {
+    const fetchDriverId = async () => {
+      try {
+        const db = getFirestore();
+        const rideRequestRef = doc(db, 'rideRequests', requestId);
+        const rideRequestSnap = await getDoc(rideRequestRef);
+
+        if (rideRequestSnap.exists()) {
+          const data = rideRequestSnap.data();
+          if (data.driverId) {
+            setDriverId(data.driverId);
+          } else {
+            Alert.alert('Error', 'Driver ID not found in ride request.');
+          }
+        } else {
+          Alert.alert('Error', 'Ride request not found.');
+        }
+      } catch (error) {
+        console.error('Error fetching ride request:', error);
+        Alert.alert('Error', 'Failed to fetch driver ID.');
+      }
+    };
+
+    fetchDriverId();
+  }, [requestId]);
+
+  useEffect(() => {
+    if (driverId) {
+      const timer = setTimeout(() => {
+        navigation.navigate('Rating', { driverId });
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [driverId]);
 
   return (
     <View style={styles.container}>
@@ -56,4 +86,3 @@ const styles = StyleSheet.create({
 });
 
 export default PaymentConfirmationScreen;
- 
